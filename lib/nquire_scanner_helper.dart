@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 
-class NQuireScannerHelper {
-  static const platform = MethodChannel('flutter.native/helper');
+class NquireScannerHelper {
+  static const platform = MethodChannel('nquire_scanner_helper');
 
   /// Start the scanner, it lasts for 9 seconds(max).
   /// If successful returns a String [code], otherwise an empty string
