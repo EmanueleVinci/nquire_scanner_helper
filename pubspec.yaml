@@ -5,7 +5,7 @@ homepage: https://github.com/EmanueleVinci/nquire_scanner_helper.git
 
 environment:
   sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=1.17.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
