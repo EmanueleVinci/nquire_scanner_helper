@@ -5,4 +5,5 @@ A really basic Flutter helper to use NQuire barcode scanner
 Tested on NQuire 350 Skate
 
 ## Usage
-Just call await NQuireHelper.scan(), it will activate the scanner for 9 seconds.  If successful returns a String code, otherwise an empty string
+Just call await NQuireScannerHelper.scan(), it will activate the scanner for 9 seconds. If
+successful returns a String code, otherwise an empty string
