@@ -1,6 +1,6 @@
 name: nquire_scanner_helper
 description: A really basic Flutter helper to use NQuire barcode scanner.
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/EmanueleVinci/nquire_scanner_helper.git
 
 environment:

@@ -23,28 +23,27 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-
-        var receiver = object : BroadcastReceiver() {
+        var wrapper = BroadcastReceiverWrapper(object : BroadcastReceiver() {
             override fun onReceive(contxt: Context?, intent: Intent?) {
                 val code = intent?.getStringExtra("SCAN_BARCODE1")
                 result.success(code)
             }
-        }
+        })
 
         when {
             call.method.equals("activateScan") -> {
-                activateScan(receiver)
+                activateScan(wrapper)
             }
 
             call.method.equals("stopScan") -> {
-                stopScan(receiver)
+                stopScan(wrapper)
             }
         }
     }
 
 
     private fun activateScan(
-        receiver: BroadcastReceiver
+        receiverWrapper: BroadcastReceiverWrapper
     ) {
         val intent = Intent("nlscan.action.SCANNER_TRIG")
         intent.putExtra("SCAN_TIMEOUT", 9) // SCAN_TIMEOUT value: int, 1-9; unit: second.
@@ -52,7 +51,7 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
 
         try {
             val mFilter = IntentFilter("nlscan.action.SCANNER_RESULT")
-            context.registerReceiver(receiver, mFilter)
+            context.registerReceiver(receiverWrapper.receiver, mFilter)
             println("Listener started, waiting for scan...")
         } catch (e: Exception) {
             println("LISTENER ERROR:")
@@ -60,10 +59,10 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
-    private fun stopScan(scannerReceiver: BroadcastReceiver) {
+    private fun stopScan(receiverWrapper: BroadcastReceiverWrapper) {
         val stopIntent = Intent("nlscan.action.STOP_SCAN")
         context.sendBroadcast(stopIntent)
-        context.unregisterReceiver(scannerReceiver)
+        context.unregisterReceiver(receiverWrapper.receiver)
 
         println("Stop Scanning")
     }
@@ -74,3 +73,6 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
     }
 }
 
+private class BroadcastReceiverWrapper constructor(val receiver: BroadcastReceiver) {
+
+}
