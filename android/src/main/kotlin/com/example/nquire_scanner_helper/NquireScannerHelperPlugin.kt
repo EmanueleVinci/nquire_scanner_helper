@@ -23,38 +23,36 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        val scannerReceiverWrapper: BroadcastReceiverWrapper = BroadcastReceiverWrapper()
+
+        var receiver = object : BroadcastReceiver() {
+            override fun onReceive(contxt: Context?, intent: Intent?) {
+                val code = intent?.getStringExtra("SCAN_BARCODE1")
+                result.success(code)
+            }
+        }
 
         when {
             call.method.equals("activateScan") -> {
-                activateScan(result, scannerReceiverWrapper)
+                activateScan(receiver)
             }
 
             call.method.equals("stopScan") -> {
-                stopScan(scannerReceiverWrapper.receiver)
+                stopScan(receiver)
             }
         }
     }
 
 
     private fun activateScan(
-        result: MethodChannel.Result,
-        scannerReceiverWrapper: BroadcastReceiverWrapper
+        receiver: BroadcastReceiver
     ) {
         val intent = Intent("nlscan.action.SCANNER_TRIG")
         intent.putExtra("SCAN_TIMEOUT", 9) // SCAN_TIMEOUT value: int, 1-9; unit: second.
         context.sendBroadcast(intent)
 
         try {
-            scannerReceiverWrapper.receiver = object : BroadcastReceiver() {
-                override fun onReceive(contxt: Context?, intent: Intent?) {
-                    val code = intent?.getStringExtra("SCAN_BARCODE1")
-                    result.success(code)
-                }
-            }
-
             val mFilter = IntentFilter("nlscan.action.SCANNER_RESULT")
-            context.registerReceiver(scannerReceiverWrapper.receiver, mFilter)
+            context.registerReceiver(receiver, mFilter)
             println("Listener started, waiting for scan...")
         } catch (e: Exception) {
             println("LISTENER ERROR:")
@@ -76,7 +74,3 @@ class NquireScannerHelperPlugin : FlutterPlugin, MethodCallHandler {
     }
 }
 
-/// Wrapper class. In Kotlin all variables are final, but not their props
-private class BroadcastReceiverWrapper {
-    lateinit var receiver: BroadcastReceiver
-}
